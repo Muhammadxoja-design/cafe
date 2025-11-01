@@ -1,0 +1,330 @@
+Mayli, botni detallar bilan tushuntirib beraman. Har bir qadamni aniq ko'rib chiqamiz!
+
+🤖 TELEGRAM BOT - To'liq Oqim (User Flow)
+1. BOSHLANG'ICH (Start)
+Foydalanuvchi /start bosadi:
+👋 Xush kelibsiz [Restoran Nomi]ga!
+
+Bizda eng mazali taomlar va tez yetkazib berish!
+
+📱 Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:
+
+[📞 Telefon raqamni yuborish] - tugma
+```
+
+**Bot oladi:**
+- Telefon raqam (Telegram contact)
+- Ismini (Telegram profile dan)
+- User ID ni saqlaydi database ga
+
+---
+
+### **2. ASOSIY MENYU**
+```
+🏠 Asosiy menyu:
+
+[🍕 Menyu]  [🛒 Savatim (0)]
+[📦 Buyurtmalarim]  [ℹ️ Biz haqimizda]
+[⚙️ Sozlamalar]
+```
+
+---
+
+### **3. 🍕 MENYU BO'LIMI (Eng Muhim!)**
+
+**3.1. Kategoriyalar:**
+```
+Qaysi bo'limdan buyurtma berasiz?
+
+[🍕 Pitsa]  [🍔 Burgerlar]
+[🍜 Sho'rva]  [🥗 Salatlar]
+[🍰 Desertlar]  [☕ Ichimliklar]
+
+[⬅️ Ortga]
+```
+
+**3.2. Mahsulotlar ro'yxati (masalan Pitsa tanlandi):**
+```
+🍕 PITSALAR
+
+1️⃣ Margarita
+   💰 35,000 so'm
+   📝 Pomidor, mozzarella, rayhon
+   [📷 Rasm]
+   [➕ Savatga qo'shish]
+
+2️⃣ Pepperoni
+   💰 45,000 so'm  
+   📝 Kolbasa, pomidor, mozzarella
+   [📷 Rasm]
+   [➕ Savatga qo'shish]
+
+[⬅️ Ortga]  [🛒 Savatga o'tish]
+```
+
+**3.3. Mahsulotni tanlash:**
+```
+🍕 Margarita
+💰 35,000 so'm
+
+[RASM KO'RINADI]
+
+📝 Tarkibi: 
+Pomidor sousi, mozzarella pishloq, rayhon
+
+O'lchamni tanlang:
+[25cm] [30cm] [35cm]
+
+Miqdorini tanlang:
+[➖] 1 [➕]
+
+Qo'shimcha:
+[ ] Qo'shimcha pishloq (+5,000)
+[ ] Achchiq sous (+2,000)
+
+[✅ Savatga qo'shish]  [❌ Bekor qilish]
+```
+
+---
+
+### **4. 🛒 SAVAT (Cart)**
+```
+🛒 Sizning savatingiz:
+
+1. Margarita (30cm) x2
+   70,000 so'm
+   [✏️ Tahrirlash] [🗑 O'chirish]
+
+2. Pepperoni (35cm) x1  
+   45,000 so'm
+   [✏️ Tahrirlash] [🗑 O'chirish]
+
+━━━━━━━━━━━━━━━━━
+💵 Jami: 115,000 so'm
+🚚 Yetkazib berish: 10,000 so'm
+━━━━━━━━━━━━━━━━━
+✅ UMUMIY: 125,000 so'm
+
+[📦 Buyurtma berish]
+[🔙 Menuga qaytish]
+[🗑 Savatni tozalash]
+```
+
+---
+
+### **5. 📦 BUYURTMA BERISH OQIMI**
+
+**5.1. Manzil so'rash:**
+```
+📍 Yetkazib berish manzilini yuboring:
+
+Variantlar:
+[📌 Geolokatsiya yuborish]
+[✍️ Manzilni yozish]
+[📋 Avvalgi manzillarim]
+
+[⬅️ Ortga]
+```
+
+**Agar geolokatsiya yuborsа:**
+- Google Maps link yaratish
+- Yaqin atrofni aniqlash
+- Tasdiqlash so'rash
+
+**Agar yozsa:**
+```
+Manzil qabul qilindi ✅
+📍 Toshkent sh, Chilonzor tumani, 12-mavze, 25-uy
+
+To'g'rimi?
+[✅ Ha, to'g'ri]  [✏️ O'zgartirish]
+```
+
+**5.2. Qo'shimcha ma'lumot:**
+```
+📝 Qo'shimcha izoh (ixtiyoriy):
+
+Masalan: 
+- Podezd/квартира
+- Eshikni qanday ochish
+- Qo'shimcha yo'riqnoma
+
+[⏭ O'tkazib yuborish]
+```
+
+**5.3. To'lov usuli:**
+```
+💳 To'lov usulini tanlang:
+
+[💵 Naqd pul]
+[💳 Payme]
+[💳 Click]  
+[💳 Uzum Bank]
+
+[⬅️ Ortga]
+```
+
+---
+
+### **6. ✅ BUYURTMA TASDIQLANISHI**
+```
+🎉 Buyurtmangiz qabul qilindi!
+
+📦 Buyurtma #12345
+
+🛒 Mahsulotlar:
+- Margarita x2 - 70,000
+- Pepperoni x1 - 45,000
+
+📍 Manzil: Chilonzor, 12-mavze, 25-uy
+💳 To'lov: Naqd
+💰 Jami: 125,000 so'm
+
+⏱ Taxminiy vaqt: 30-40 daqiqa
+
+Holat: 🟡 Tayyorlanmoqda...
+
+[📱 Qo'ng'iroq qilish]
+[❌ Bekor qilish]
+```
+
+---
+
+### **7. 📲 HOLAT YANGILANISHI (Real-time)**
+
+Bot **avtomatik** xabar yuboradi:
+```
+🟢 Buyurtma #12345
+
+Holat o'zgardi:
+✅ Tasdiqlanadi → ✅ Tayyorlanmoqda
+
+Taxminiy vaqt: 25 daqiqa
+```
+```
+🚗 Buyurtma #12345
+
+Holat o'zgardi:  
+✅ Tayyorlanmoqda → 🚚 Yo'lda
+
+Kuryer: Sardor
+📞 +998 90 123 45 67
+
+Taxminiy yetib borish: 15 daqiqa
+```
+```
+🎉 Buyurtma #12345
+
+✅ YETKAZILDI!
+
+Buyurtmangiz uchun rahmat! 
+
+Xizmatimizni baholang:
+⭐⭐⭐⭐⭐
+
+[5] [4] [3] [2] [1]
+```
+
+---
+
+### **8. 📦 BUYURTMALARIM**
+```
+📦 Sizning buyurtmalaringiz:
+
+🟢 Faol:
+#12345 - 🚚 Yo'lda (10 daq)
+125,000 so'm
+[Batafsil]
+
+📋 Tarix:
+#12344 - ✅ Yetkazilgan (bugun 14:30)
+85,000 so'm
+[Qayta buyurtma] [Batafsil]
+
+#12343 - ✅ Yetkazilgan (kecha)
+120,000 so'm
+[Qayta buyurtma] [Batafsil]
+
+[⬅️ Asosiy menyu]
+```
+
+---
+
+### **9. ⚙️ SOZLAMALAR**
+```
+⚙️ Sozlamalar:
+
+👤 Ism: Abdullo
+📱 Telefon: +998 90 123 45 67
+[✏️ O'zgartirish]
+
+📍 Saqlanган manzillar:
+- Uy: Chilonzor, 12-mavze, 25-uy
+- Ish: Yunusobod, 5-mavze
+[➕ Yangi qo'shish]
+
+🔔 Bildirishnomalar: ✅ Yoqilgan
+🌐 Til: O'zbek
+
+[⬅️ Ortga]
+```
+
+---
+
+### **10. 🎁 QO'SHIMCHA IMKONIYATLAR**
+
+**10.1. Bonus/Loyallik:**
+```
+🎁 Sizning bonusingiz: 15,000 so'm
+
+Har 100,000 so'm buyurtmaga 10% cashback!
+
+Bonusdan foydalanish:
+[✅] Bonusdan foydalanish (15,000)
+
+[📊 Bonuslar tarixi]
+```
+
+**10.2. Aksiya/Chegirmalar:**
+```
+🔥 AKSIYA!
+
+Har kuni 14:00-16:00 
+Barcha pitsalarga -20%!
+
+[🍕 Buyurtma berish]
+```
+
+**10.3. Izoh qoldirish:**
+```
+⭐⭐⭐⭐⭐ 5/5
+
+Zo'r xizmat! Tez yetkazishdi, issiq edi!
+
+- Sardorbek, 2 soat oldin
+
+[✍️ Izoh qoldirish]
+
+🔧 TEXNIK DETALLAR
+Database (PostgreSQL):
+sqlusers: id, telegram_id, phone, name, created_at
+categories: id, name, icon, order
+products: id, category_id, name, description, price, image, available
+orders: id, user_id, status, total, address, payment_method, created_at
+order_items: id, order_id, product_id, quantity, price
+addresses: id, user_id, address, latitude, longitude, is_default
+Bot Holatlari (States):
+
+MAIN_MENU
+BROWSING_CATEGORIES
+VIEWING_PRODUCT
+CART_VIEW
+ENTERING_ADDRESS
+SELECTING_PAYMENT
+ORDER_TRACKING
+
+Notification Tizimi:
+
+Admin panel yangi buyurtma → telegram xabar
+Kuryer tayinlandi → mijozga xabar
+Holat o'zgardi → mijozga real-time
