@@ -1,12 +1,17 @@
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();
+
+// ESM friendly __filename / __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -45,11 +50,11 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     try {
-      // Try common development template locations (prefer project-level client)
+      // Try multiple candidate locations for client index.html (dev layouts vary)
       const clientCandidates = [
-        path.resolve(process.cwd(), "client", "index.html"),      // monorepo-style
+        path.resolve(process.cwd(), "client", "index.html"),      // project-root client/
         path.resolve(__dirname, "..", "client", "index.html"),    // server/../client
-        path.resolve(process.cwd(), "public", "index.html"),      // fallback
+        path.resolve(process.cwd(), "public", "index.html"),      // public/index.html
       ];
 
       const clientTemplatePath = clientCandidates.find(p => fs.existsSync(p));
@@ -60,7 +65,7 @@ export async function setupVite(app: Express, server: Server) {
         );
       }
 
-      // always reload the index.html file from disk incase it changes
+      // always reload the index.html file from disk in case it changes
       let template = await fs.promises.readFile(clientTemplatePath, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
