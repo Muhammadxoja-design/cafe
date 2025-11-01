@@ -46,14 +46,27 @@ bot.command('start', async (ctx) => {
   const user = await db.getUser(telegramId);
 
   if (!user) {
-    await ctx.reply(
-      `👋 Xush kelibsiz ${RESTAURANT_NAME}ga!\n\n` +
-      `Bizda eng mazali taomlar va tez yetkazib berish!\n\n` +
-      `📱 Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:`,
-      Markup.keyboard([
-        Markup.button.contactRequest('📞 Telefon raqamni yuborish')
-      ]).resize()
-    );
+    try {
+      await ctx.reply(
+        `👋 Xush kelibsiz ${RESTAURANT_NAME}ga!\n\n` +
+        `Bizda eng mazali taomlar va tez yetkazib berish!\n\n` +
+        `📱 Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:`,
+        Markup.keyboard([
+          Markup.button.contactRequest('📞 Telefon raqamni yuborish')
+        ]).resize()
+      );
+    } catch (error) {
+      console.error('Xatolik yuz berdi:', error);
+      await ctx.reply(
+        `👋 Xush kelibsiz ${RESTAURANT_NAME}ga!\n\n` +
+        `Bizda eng mazali taomlar va tez yetkazib berish!\n\n` +
+        `📱 Ro'yxatdan o'tish uchun telefon raqamingizni yuboring:`,
+        Markup.keyboard([
+          Markup.button.contactRequest('📞 Telefon raqamni yuborish')
+        ]).resize()
+      );
+    }
+
     ctx.session.state = 'AWAITING_PHONE';
   } else {
     await showMainMenu(ctx);
@@ -82,7 +95,8 @@ async function showMainMenu(ctx: BotContext) {
   const session = ctx.session;
   const cartCount = session.cart?.length || 0;
 
-  await ctx.reply(
+  try {
+      await ctx.editMessageText(
     `🏠 Asosiy menyu:`,
     Markup.inlineKeyboard([
       [Markup.button.callback('🍕 Menyu', 'menu'), Markup.button.callback(`🛒 Savatim (${cartCount})`, 'cart')],
@@ -90,6 +104,16 @@ async function showMainMenu(ctx: BotContext) {
       [Markup.button.callback('⚙️ Sozlamalar', 'settings')],
     ])
   );
+  } catch (error) {
+      await ctx.reply(
+    `🏠 Asosiy menyu:`,
+    Markup.inlineKeyboard([
+      [Markup.button.callback('🍕 Menyu', 'menu'), Markup.button.callback(`🛒 Savatim (${cartCount})`, 'cart')],
+      [Markup.button.callback('📦 Buyurtmalarim', 'orders'), Markup.button.callback('ℹ️ Biz haqimizda', 'about')],
+      [Markup.button.callback('⚙️ Sozlamalar', 'settings')],
+    ])
+  );
+  }
   session.state = 'MAIN_MENU';
 }
 
@@ -360,7 +384,11 @@ bot.action('checkout', async (ctx) => {
 
 // Address input handlers
 bot.action('write_address', async (ctx) => {
-  await ctx.reply('📝 Manzilni yozing (masalan: Toshkent sh, Chilonzor tumani, 12-mavze, 25-uy):');
+  try {
+    await ctx.editMessageText('📝 Manzilni yozing (masalan: Toshkent sh, Chilonzor tumani, 12-mavze, 25-uy):');
+  } catch (error) {
+    await ctx.reply('📝 Manzilni yozing (masalan: Toshkent sh, Chilonzor tumani, 12-mavze, 25-uy):');
+  }
   ctx.session.state = 'AWAITING_ADDRESS_TEXT';
 });
 
@@ -370,12 +398,21 @@ bot.on('text', async (ctx) => {
       address: ctx.message.text,
     };
 
-    await ctx.reply(
+    try {
+      await ctx.editMessageText(
       `Manzil qabul qilindi ✅\n📍 ${ctx.message.text}\n\nTo'g'rimi?`,
       Markup.inlineKeyboard([
         [Markup.button.callback('✅ Ha, to\'g\'ri', 'confirm_address'), Markup.button.callback('✏️ O\'zgartirish', 'write_address')],
       ])
     );
+    } catch (error) {
+      await ctx.reply(
+      `Manzil qabul qilindi ✅\n📍 ${ctx.message.text}\n\nTo'g'rimi?`,
+      Markup.inlineKeyboard([
+        [Markup.button.callback('✅ Ha, to\'g\'ri', 'confirm_address'), Markup.button.callback('✏️ O\'zgartirish', 'write_address')],
+      ])
+    );
+    }
   } else if (ctx.session.state === 'AWAITING_ADDITIONAL_INFO') {
     ctx.session.tempAdditionalInfo = ctx.message.text;
     await askPaymentMethod(ctx);
@@ -394,15 +431,27 @@ bot.on('location', async (ctx) => {
       longitude,
     };
 
-    await ctx.reply(
+    try {
+      await ctx.editMessageText(
       `Manzil qabul qilindi ✅\n${address}\n\nTo'g'rimi?`,
       Markup.inlineKeyboard([
-        [Markup.button.callback('✅ Ha, to\'g\'ri', 'confirm_address'), Markup.button.callback('✏️ O\'zgartirish', 'checkout')],
+        [Markup.button.callback('✅ Ha, to\'g\'ri', 'confirm_address'), Markup.button.callback('✏️ O\'zgartirish', 'write_address')],
       ])
     );
+    } catch (error) {
+      await ctx.reply(
+      `Manzil qabul qilindi ✅\n${address}\n\nTo'g'rimi?`,
+      Markup.inlineKeyboard([
+        [Markup.button.callback('✅ Ha, to\'g\'ri', 'confirm_address'), Markup.button.callback('✏️ O\'zgartirish', 'write_address')],
+      ])
+    );
+
+    }
+
   }
 });
 
+// Confirm address
 bot.action('confirm_address', async (ctx) => {
   await ctx.reply(
     `📝 Qo'shimcha izoh (ixtiyoriy):\n\nMasalan:\n- Podezd/квартира\n- Eshikni qanday ochish\n- Qo'shimcha yo'riqnoma`,
@@ -481,7 +530,8 @@ bot.action(/payment_(.+)/, async (ctx) => {
     itemsList += ` x${item.quantity} - ${item.price.toLocaleString()}\n`;
   });
 
-  await ctx.reply(
+  try {
+    await ctx.editMessageText(
     `🎉 Buyurtmangiz qabul qilindi!\n\n` +
     `📦 Buyurtma #${order.id}\n\n` +
     `🛒 Mahsulotlar:\n${itemsList}\n` +
@@ -494,6 +544,21 @@ bot.action(/payment_(.+)/, async (ctx) => {
       [Markup.button.callback('⬅️ Asosiy menyu', 'main_menu')],
     ])
   );
+  } catch (error) {
+    await ctx.reply(
+    `🎉 Buyurtmangiz qabul qilindi!\n\n` +
+    `📦 Buyurtma #${order.id}\n\n` +
+    `🛒 Mahsulotlar:\n${itemsList}\n` +
+    `📍 Manzil: ${order.address}\n` +
+    `💳 To'lov: ${paymentMethodNames[method]}\n` +
+    `💰 Jami: ${total.toLocaleString()} so'm\n\n` +
+    `⏱ Taxminiy vaqt: ${order.estimatedTime}\n\n` +
+    `Holat: 🟡 Tayyorlanmoqda...`,
+    Markup.inlineKeyboard([
+      [Markup.button.callback('⬅️ Asosiy menyu', 'main_menu')],
+    ])
+  );
+  }
 
   setTimeout(() => {
     db.updateOrderStatus(order.id, 'confirmed');

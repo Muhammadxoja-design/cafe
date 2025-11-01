@@ -1,3 +1,4 @@
+# replit.toml yoki .replit konfiguratsiya (siz ishlatayotgan formatga moslang)
 modules = ["nodejs-20", "web", "postgresql-16"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
@@ -11,15 +12,20 @@ build = ["npm", "run", "build"]
 run = ["npm", "run", "start"]
 
 [[ports]]
+# Primary app port (server should respect process.env.PORT or fallback 5000)
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 40143
-externalPort = 3000
+# Agar alohida internal servis kerak bo'lsa, uni izohlab qo'ying yoki olib tashlang.
+# [[ports]]
+# localPort = 40143
+# externalPort = 3000
 
 [env]
+# Ishlaydigan server PORT muhit o'zgaruvchisi
 PORT = "5000"
+# Tavsiya: maxfiy DB url va boshqa maxfiylarni Replit Secrets ga qo'shing:
+# DATABASE_URL, BOT_TOKEN, ADMIN_CHAT_ID, etc.
 
 [workflows]
 runButton = "Project"
@@ -42,10 +48,13 @@ task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+# USER-LEVEL ENV (public-shared) ni minimal saqlang. Maxfiylarni SECRETS ga qo'ying.
 [userenv]
 
 [userenv.shared]
 RESTAURANT_NAME = "Mening Restoranim"
 DB_TYPE = "file"
-DB_FILE_PATH = "./data/restaurant.db"
+# DB_FILE_PATH va DELIVERY_PRICE kabi qiymatlar maxfiy bo'lmasa ham, agar o'zgarmas va
+# commit qilinmasa ma'qul. Agar DB fayli lokal bo'lsa va sir saqlanishi kerak bo'lsa,
+# uni SECRETS yoki tashqi private DB (Postgres) ga ko'chirishni o'ylang.
 DELIVERY_PRICE = "10000"

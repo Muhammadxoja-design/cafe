@@ -1,3 +1,4 @@
+// ... (avvalgi importlar)
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -55,31 +56,53 @@ app.use((req, res, next) => {
     const message = err.message || "Internal Server Error";
 
     res.status(status).json({ message });
-    throw err;
+    // don't rethrow here — we already responded
+    console.error('Unhandled error:', err);
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  // default host: undefined (let OS choose), but on Windows prefer 127.0.0.1
+  const preferredHost = process.platform === "win32" ? "127.0.0.1" : "0.0.0.0";
+
+  // Only pass reusePort on platforms that support it (linux/darwin)
+  const listenOptions: any = { port, host: preferredHost };
+  if (process.platform !== "win32") {
+    listenOptions.reusePort = true;
+  }
+
+  server.listen(listenOptions, () => {
+    log(`serving on http://${listenOptions.host}:${port}`);
+    // Start Telegram bot after server is listening
+    startBot().catch(err => {
+      console.error('Failed to start bot:', err);
+    });
   });
 
-  // Start Telegram bot
-  await startBot();
+  server.on('error', (err: any) => {
+    console.error('Server listen error:', err);
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use.`);
+    } else if (err.code === 'ENOTSUP') {
+      console.error('Listen option not supported on this platform — retrying without host/reusePort...');
+      // fallback: try simple listen without options object
+      try {
+        server.listen(port, () => {
+          log(`Fallback: serving on http://127.0.0.1:${port}`);
+          startBot().catch(e => console.error('Failed to start bot after fallback:', e));
+        });
+      } catch (e) {
+        console.error('Fallback listen also failed:', e);
+        process.exit(1);
+      }
+    } else {
+      process.exit(1);
+    }
+  });
+
 })();
