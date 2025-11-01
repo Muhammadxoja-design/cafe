@@ -37,3 +37,11 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[userenv]
+
+[userenv.shared]
+RESTAURANT_NAME = "Mening Restoranim"
+DB_TYPE = "file"
+DB_FILE_PATH = "./data/restaurant.db"
+DELIVERY_PRICE = "10000"
