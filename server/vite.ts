@@ -45,15 +45,23 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      // Try common development template locations (prefer project-level client)
+      const clientCandidates = [
+        path.resolve(process.cwd(), "client", "index.html"),      // monorepo-style
+        path.resolve(__dirname, "..", "client", "index.html"),    // server/../client
+        path.resolve(process.cwd(), "public", "index.html"),      // fallback
+      ];
+
+      const clientTemplatePath = clientCandidates.find(p => fs.existsSync(p));
+
+      if (!clientTemplatePath) {
+        throw new Error(
+          `Could not find client index.html. Tried:\n  ${clientCandidates.join("\n  ")}`
+        );
+      }
 
       // always reload the index.html file from disk incase it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      let template = await fs.promises.readFile(clientTemplatePath, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
@@ -68,18 +76,30 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  // Candidate build locations (production). Order matters.
+  const candidates = [
+    path.resolve(process.cwd(), "dist", "public"), // Vite default build output
+    path.resolve(process.cwd(), "server", "public"), // older layout: server/public
+    path.resolve(process.cwd(), "public"), // simple public folder
+    path.resolve(__dirname, "public"), // relative to compiled server file
+  ];
 
-  if (!fs.existsSync(distPath)) {
+  const found = candidates.find(p => fs.existsSync(p));
+
+  if (!found) {
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory. Tried:\n  ${candidates.join("\n  ")}\n` +
+      `Run 'npm run build' locally and ensure build output (dist/public) is produced during build step.`
     );
   }
 
-  app.use(express.static(distPath));
+  // log for visibility in deploy logs
+  console.log(`Serving static files from: ${found}`);
+
+  app.use(express.static(found));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    res.sendFile(path.resolve(found, "index.html"));
   });
 }
