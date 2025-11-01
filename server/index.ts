@@ -167,4 +167,15 @@ if (!process.env.DB_PATH && !process.env.DATABASE_URL) {
   console.warn("Warning: no DB_PATH or DATABASE_URL env var set; ensure DB is configured");
 }
 
+// server/index.ts — qo'shing / yangilang (yuqori qismga)
+const TRUST_PROXY = process.env.TRUST_PROXY ?? (process.env.NODE_ENV === "production" ? "1" : "0");
+
+if (TRUST_PROXY === "0" || TRUST_PROXY.toLowerCase?.() === "false") {
+  app.set("trust proxy", false);
+} else if (/^\d+$/.test(TRUST_PROXY)) {
+  app.set("trust proxy", Number(TRUST_PROXY)); // e.g. 1
+} else {
+  app.set("trust proxy", TRUST_PROXY); // string expression or subnet if needed
+}
+
 startServer();
