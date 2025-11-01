@@ -596,13 +596,21 @@ bot.action('toggle_notifications', async (ctx) => {
 bot.action('main_menu', showMainMenu);
 
 export async function startBot() {
-  await db.initialize();
-  await db.seedInitialData();
-  console.log(`✅ Database initialized (${process.env.DB_TYPE || 'file'})`);
-  
-  await bot.launch();
-  console.log(`🤖 Bot started: ${RESTAURANT_NAME}`);
-  
-  process.once('SIGINT', () => bot.stop('SIGINT'));
-  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  try {
+    await db.initialize();
+    await db.seedInitialData();
+    console.log(`✅ Database initialized (${process.env.DB_TYPE || 'file'})`);
+    
+    console.log(`🔄 Launching Telegram bot...`);
+    await bot.launch();
+    console.log(`🤖 Bot started successfully: ${RESTAURANT_NAME}`);
+    console.log(`📱 Send /start to your bot to begin!`);
+    
+    process.once('SIGINT', () => bot.stop('SIGINT'));
+    process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  } catch (error) {
+    console.error('❌ Failed to start bot:', error);
+    console.error('Please check your BOT_TOKEN in secrets');
+    throw error;
+  }
 }
